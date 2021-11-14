@@ -1,3 +1,3 @@
 # simple-grading-script
-For the class prog1 in the University of Aizu.
-It should be useless for anyone who is not related to the University.
+会津大学のプログラミングCの為のスクリプトです。
+会津大学に関係のない方には無意味です。
