@@ -97,7 +97,7 @@ cd $running_directory
 rm $scorefile_name
 for id in $(cat /home/course/prog1/local_html/2021/MkMember/Member$class)
 do
-	# If you have to prepare any other files than specified file_name, you can get the target files by adding the lines here. You can understand how to modify this part.
+	# If you have to prepare any other files than specified file_name, You can get the target files by adding the lines here. You can understand how to modify this part.
 	cp /home/course/prog1/public_html/2021/ex/ans07/prog01.h .
 
 	echo '----------'$id'----------'
@@ -123,7 +123,7 @@ do
 	fi
 
 	#Displaying the submitted source code.
-	# If you don't have to read source codes, this line can be commentouted.
+	# If you don't have to read source codes, This line can be commentouted.
 	cat $id.c
 
 	# running the program
@@ -140,7 +140,7 @@ do
 		fi
 	}
 
-	# append the total score
+	# appending the total score
 	echo "The score is $score."
 	echo $id,$score >> $scorefile_name
 done
