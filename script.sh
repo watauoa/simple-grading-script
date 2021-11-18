@@ -23,6 +23,8 @@ stdinstr="C1 1251001 Yamada 100\nC2 1251022 Watanabe 65\nC4 1251033 Saito 80\nC3
 # Those variables are about partial part interaction. 
 # The msg is the sentence that will be displayed in the interaction. Those sentences are up to you, so it's OK to write like msg=("1" "2" "3") if you know what the numbers mean.
 # The meaning of part_score is obvious. The order of the numbers corresponds to the order of msg.
+file_exist_score=20
+compilable_score=20
 msg=("Key to record?" "header file fixes?" "In main(), key input to insert and after process?")
 part_score=(30 10 20)
 
@@ -105,7 +107,7 @@ do
 	src_path_c="/home/course/prog1/local_html/2021/exsrc/$ex_num/$file_name/$id.c"
 	cp $src_path_c .
 	if [ -f $id.c ]; then
-		score=$(($score+20))
+		score=$(($score+$file_exist_score))
 	else
 		echo "the score is 0"
 		echo $id,0 >> $scorefile_name
@@ -115,7 +117,7 @@ do
 	# compiling the program
 	gcc $id.c -o $id.out
 	if [ $? == 0 ]; then
-		score=$(($score+20))
+		score=$(($score+$compilable_score))
 	else
 		echo "the score is $score"
 		echo $id,$score >> $scorefile_name
