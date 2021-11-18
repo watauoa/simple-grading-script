@@ -20,6 +20,7 @@
 # If an input is command line arguments, you have to modify the part "running the program".
 stdinstr="202111 Sota   2 91 A\n202112 Mei    3 83 A\n202113 Minato 1 52 C\n202114 Ichika 4 59 C\n202115 Haruki 3 77     B\n"
 
+# Meanings of the file_exist_score and the compilable_score is obvious.
 # Those variables are about partial part interaction. 
 # The msg is the sentence that will be displayed in the interaction. Those sentences are up to you, so it's OK to write like msg=("1" "2" "3") if you know what the numbers mean.
 # The meaning of part_score is obvious. The order of the numbers corresponds to the order of msg.
