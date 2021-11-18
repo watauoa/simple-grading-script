@@ -18,13 +18,13 @@
 # The input string. Inputting enter key should be expressed as \n. Additionally, inputting ctrl-d doesn't have to express in this string.
 # If an input is from a file specified by a file name, this string should be the one-line content string that was replaced from newline to \n.
 # If an input is command line arguments, you have to modify the part "running the program".
-stdinstr="202111 Sota   2 91 A\n202112 Mei    3 83 A\n202113 Minato 1 52 C\n202114 Ichika 4 59 C\n202115 Haruki 3 77     B\n"
+stdinstr="C1 1251001 Yamada 100\nC2 1251022 Watanabe 65\nC4 1251033 Saito 80\nC3 1251001 Suzuki 70\n"
 
 # Those variables are about partial part interaction. 
 # The msg is the sentence that will be displayed in the interaction. Those sentences are up to you, so it's OK to write like msg=("1" "2" "3") if you know what the numbers mean.
 # The meaning of part_score is obvious. The order of the numbers corresponds to the order of msg.
-msg=("Is the output is OK?")
-part_score=(60)
+msg=("Key to record?" "header file fixes?" "In main(), key input to insert and after process?")
+part_score=(30 10 20)
 
 # In the partial score interaction, the key of this character means the program satisfies the condition. Any other character means decline.
 # The default value is "m" because it's easy to press repeatedly.
@@ -32,7 +32,7 @@ yes_char="m"
 
 # Exercise number
 # Though it's OK to write like ex12, ex06, and so on.
-ex_num=8
+ex_num=9
 
 # Program name.
 # Example:
@@ -44,11 +44,11 @@ ex_num=8
 # - prog02
 # - 03.
 # and so on.
-file_name=1c
+file_name=1
 
 # class number.
 # Though it's OK to write like C6 and so on.
-class=2
+class=1
 
 # Translating the exercise number, program file name, class number.
 if [[ ! $ex_num =~ ^(ex)?[0-9][0-9]?$ ]]; then
@@ -97,8 +97,8 @@ cd $running_directory
 rm $scorefile_name
 for id in $(cat /home/course/prog1/local_html/2021/MkMember/Member$class)
 do
-	# If you have to prepare any other files than specified file_name, You can get the target files by adding the lines here. You can understand how to modify this part.
-	cp /home/course/prog1/public_html/2021/ex/ans07/prog01.h .
+	# If you have to prepare any other files than specified file_name, you can get the target files by adding the lines here. You can understand how to modify this part.
+	cp /home/course/prog1/local_html/2021/exsrc/$ex_num/stulist01/$id.h stulist01.h
 
 	echo '----------'$id'----------'
 	score=0
@@ -123,7 +123,8 @@ do
 	fi
 
 	#Displaying the submitted source code.
-	# If you don't have to read source codes, This line can be commentouted.
+	# If you don't have to read source codes, this line can be commentouted.
+	cat stulist01.h
 	cat $id.c
 
 	# running the program
@@ -140,7 +141,7 @@ do
 		fi
 	}
 
-	# appending the total score
+	# append the total score
 	echo "The score is $score."
 	echo $id,$score >> $scorefile_name
 done
