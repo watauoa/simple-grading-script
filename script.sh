@@ -101,7 +101,7 @@ rm $scorefile_name
 for id in $(cat /home/course/prog1/local_html/2021/MkMember/Member$class)
 do
 	# If you have to prepare any other files than specified file_name, You can get the target files by adding the lines here. You can understand how to modify this part.
-	cp /home/course/prog1/public_html/2021/ex/$ex_num/* .
+	cp -P /home/course/prog1/public_html/2021/ex/$ex_num/* .
 
 	echo '----------'$id'----------'
 	score=0
