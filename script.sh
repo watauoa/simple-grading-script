@@ -100,8 +100,8 @@ cd $running_directory
 rm $scorefile_name
 for id in $(cat /home/course/prog1/local_html/2021/MkMember/Member$class)
 do
-	# If you have to prepare any other files than specified file_name, you can get the target files by adding the lines here. You can understand how to modify this part.
-	cp /home/course/prog1/local_html/2021/exsrc/$ex_num/stulist01/$id.h stulist01.h
+	# If you have to prepare any other files than specified file_name, You can get the target files by adding the lines here. You can understand how to modify this part.
+	cp /home/course/prog1/public_html/2021/ex/$ex_num/* .
 
 	echo '----------'$id'----------'
 	score=0
