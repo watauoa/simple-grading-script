@@ -35,7 +35,7 @@ yes_char="m"
 
 # Exercise number
 # Though it's OK to write like ex12, ex06, and so on.
-ex_num=8
+ex_num=9
 
 # Program name.
 # Example:
@@ -47,7 +47,7 @@ ex_num=8
 # - prog02
 # - 03.
 # and so on.
-file_name=1c
+file_name=1
 
 # class number.
 # Though it's OK to write like C6 and so on.
@@ -101,7 +101,7 @@ rm $scorefile_name
 for id in $(cat /home/course/prog1/local_html/2021/MkMember/Member$class)
 do
 	# If you have to prepare any other files than specified file_name, You can get the target files by adding the lines here. You can understand how to modify this part.
-	cp /home/course/prog1/public_html/2021/ex/ans07/prog01.h .
+	cp /home/course/prog1/public_html/2021/ex/$ex_num/* .
 
 	echo '----------'$id'----------'
 	score=0
