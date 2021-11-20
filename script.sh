@@ -18,16 +18,21 @@
 # The input string. Inputting enter key should be expressed as \n. Additionally, inputting ctrl-d doesn't have to express in this string.
 # If an input is from a file specified by a file name, this string should be the one-line content string that was replaced from newline to \n.
 # If an input is command line arguments, you have to modify the part "running the program".
-stdinstr="202111 Sota   2 91 A\n202112 Mei    3 83 A\n202113 Minato 1 52 C\n202114 Ichika 4 59 C\n202115 Haruki 3 77     B\n"
+stdinstr="C1 202111 Sota   91\n"
 
 # Meanings of the file_exist_score and the compilable_score is obvious.
 # Those variables are about partial part interaction. 
 # The msg is the sentence that will be displayed in the interaction. Those sentences are up to you, so it's OK to write like msg=("1" "2" "3") if you know what the numbers mean.
 # The meaning of part_score is obvious. The order of the numbers corresponds to the order of msg.
+# The file_to_check is the file paths that should be checked when the score interaction. The keyword "src" and "out" is acceptable. The "src" is the source code file. The "out" is the output texts. If you should check multiple files, those files can be specified by colon separated value.
+# The re_check and re_num will be used to grade files with regex. TODO: more explanation.
 file_exist_score=20
 compilable_score=20
 msg=("Is the output is OK?")
 part_score=(60)
+file_to_check=("out")
+re_check=("C1 +202111 +Sota +91")
+re_num=(1)
 
 # In the partial score interaction, the key of this character means the program satisfies the condition. Any other character means decline.
 # The default value is "m" because it's easy to press repeatedly.
@@ -98,6 +103,9 @@ scorefile_name="score_"$ex_num"_"$file_name"_"$class".txt"
 mkdir $running_directory
 cd $running_directory
 rm $scorefile_name
+mkdir src
+mkdir elf
+mkdir out
 for id in $(cat /home/course/prog1/local_html/2021/MkMember/Member$class)
 do
 	# If you have to prepare any other files than specified file_name, You can get the target files by adding the lines here. You can understand how to modify this part.
@@ -105,37 +113,58 @@ do
 
 	echo '----------'$id'----------'
 	score=0
-	src_path_c="/home/course/prog1/local_html/2021/exsrc/$ex_num/$file_name/$id.c"
-	cp $src_path_c .
-	if [ -f $id.c ]; then
+	cp /home/course/prog1/local_html/2021/exsrc/$ex_num/$file_name/$id.c ./src
+	echo -n "File Exist: "
+	if [ -f src/$id.c ]; then
+		echo "Yes. $file_exist_score points was added."
 		score=$(($score+$file_exist_score))
 	else
-		echo "the score is 0"
+		echo "No."
+		echo "The final score is 0"
 		echo $id,0 >> $scorefile_name
 		continue
 	fi
+	echo "The current score is $score."
 
 	# compiling the program
-	gcc $id.c -o $id.out
+	cp src/$id.c ${file_name}.c
+	echo -n "Compile: "
+	gcc ${file_name}.c -o elf/$id.elf 2> /dev/null
 	if [ $? == 0 ]; then
+		echo "Successed. $compilable_score points was added."
 		score=$(($score+$compilable_score))
 	else
-		echo "the score is $score"
+		echo "Failed."
+		echo "The final score is $score"
 		echo $id,$score >> $scorefile_name
 		continue
 	fi
-
-	#Displaying the submitted source code.
-	# If you don't have to read source codes, This line can be commentouted.
-	cat $id.c
+	echo "The current score is $score."
 
 	# running the program
-	echo -e $stdinstr | timeout 0.5s ./$id.out
+	cp elf/$id.elf ./${file_name}.elf
+	echo -e $stdinstr | timeout 0.5s ./${file_name}.elf > out/$id.out
 	if [ $? != 0 ]; then
 		echo "runtime error or timeout"
 	fi
 	# message interaction
+	# TODO: more tests.
 	for ((i = 0; i < ${#msg[@]}; i++)) {
+		if [[ "${file_to_check[i]}" == "src" ]]; then
+			file_to_check[i]=./src/$id.c
+		fi
+		if [[ "${file_to_check[i]}" == "out" ]]; then
+			file_to_check[i]=./out/$id.out
+		fi
+		match_cnt=$(cat ${file_to_check[i]} | grep -P "${re_check[i]}" | wc -l)
+		if [[ ${re_check[i]} != "" ]]; then
+			if [[ $match_cnt == ${re_num[i]} ]]; then
+				score=$(($score+${part_score[i]}))
+				continue
+			fi
+		fi
+		echo "display $file_to_check."
+		cat ${file_to_check[i]}
 		read -n1 -p "${msg[i]}" yn
 		echo ''
 		if [[ $yn == $yes_char ]]; then
