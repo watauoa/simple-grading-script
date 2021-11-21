@@ -71,7 +71,7 @@ if [[ ! $ex_num =~ ex ]]; then
 	fi
 else
 	if [[ ! $ex_num =~ [0-9][0-9] ]]; then
-		ex_num=${ex_num:0:2}"0"${ex_num:2:3}
+		ex_num=${ex_num:0:2}"0"${ex_num:2:1}
 	fi
 fi
 if [[ ! $file_name =~ ^(prog)?[0-9][0-9]?[a-z]?$ ]]; then
@@ -86,7 +86,7 @@ if [[ ! $file_name =~ prog ]]; then
 	fi
 else
 	if [[ ! $file_name =~ [0-9][0-9] ]]; then
-		file_name=${file_name:0:4}"0"${file_name:4:5}
+		file_name=${file_name:0:4}"0"${file_name:4:1}
 	fi
 fi
 if [[ ! $class =~ ^[cC]?[0-9]$ ]]; then
