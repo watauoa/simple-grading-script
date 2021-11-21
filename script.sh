@@ -25,14 +25,15 @@ stdinstr="C1 202111 Sota   91\n"
 # The msg is the sentence that will be displayed in the interaction. Those sentences are up to you, so it's OK to write like msg=("1" "2" "3") if you know what the numbers mean.
 # The meaning of part_score is obvious. The order of the numbers corresponds to the order of msg.
 # The file_to_check is the file paths that should be checked when the score interaction. The keyword "src" and "out" is acceptable. The "src" is the source code file. The "out" is the output texts. If you should check multiple files, those files can be specified by colon separated value.
-# The re_check and re_num will be used to grade files with regex. If the re_check is empty, this function never work. TODO: more explanation.
+# The re_str and re_cnt will be used to grade files with regex. If the re_check is empty, this function never work. TODO: more explanation.
 file_exist_score=20
 compilable_score=20
 msg=("Is the output is OK?")
 part_score=(60)
 file_to_check=("out")
-re_check=("C1 +202111 +Sota +91")
-re_num=(1)
+re_separator=":::"
+re_str=("C1 +202111 +Sota +91")
+re_cnt=(1)
 
 # In the partial score interaction, the key of this character means the program satisfies the condition. Any other character means decline.
 # The default value is "m" because it's easy to press repeatedly.
@@ -152,18 +153,33 @@ do
 	# message interaction
 	# TODO: more tests.
 	for ((i = 0; i < ${#msg[@]}; i++)) {
+		get_score=false
 		if [[ "${file_to_check[i]}" == "src" ]]; then
 			file_to_check[i]=./src/$id.c
 		fi
 		if [[ "${file_to_check[i]}" == "out" ]]; then
 			file_to_check[i]=./out/$id.out
 		fi
-		match_cnt=$(cat ${file_to_check[i]} | grep -P "${re_check[i]}" | wc -l)
-		if [[ ${re_check[i]} != "" ]]; then
-			if [[ $match_cnt == ${re_num[i]} ]]; then
-				score=$(($score+${part_score[i]}))
-				continue
+		re_str_elm=""
+		re_str_ext=${re_str[i]}
+		re_cnt_elm=""
+		re_cnt_ext=${re_cnt[i]}
+		while [[ $re_str_elm != $re_str_ext ]]; do
+			re_str_elm=${re_str_ext%%${re_separator}*}
+			re_str_ext=${re_str_ext#*${re_separator}}
+			re_cnt_elm=${re_cnt_ext%%,*}
+			re_cnt_ext=${re_cnt_ext#*,}
+			match_cnt=$(cat ${file_to_check[i]} | grep -P "$re_str_elm" | wc -l)
+			if [[ $re_str_elm != "" ]]; then
+				if [[ $match_cnt == $re_cnt_elm]]; then
+					get_score=true
+					continue
+				fi
 			fi
+		done
+		if [[ $get_score ]]; then
+			score=$(($score+${part_score[i]}))
+			continue
 		fi
 		echo "display $file_to_check."
 		cat ${file_to_check[i]}
