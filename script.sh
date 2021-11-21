@@ -25,7 +25,7 @@ stdinstr="C1 202111 Sota   91\n"
 # The msg is the sentence that will be displayed in the interaction. Those sentences are up to you, so it's OK to write like msg=("1" "2" "3") if you know what the numbers mean.
 # The meaning of part_score is obvious. The order of the numbers corresponds to the order of msg.
 # The file_to_check is the file paths that should be checked when the score interaction. The keyword "src" and "out" is acceptable. The "src" is the source code file. The "out" is the output texts. If you should check multiple files, those files can be specified by colon separated value.
-# The re_check and re_num will be used to grade files with regex. TODO: more explanation.
+# The re_check and re_num will be used to grade files with regex. If the re_check is empty, this function never work. TODO: more explanation.
 file_exist_score=20
 compilable_score=20
 msg=("Is the output is OK?")
