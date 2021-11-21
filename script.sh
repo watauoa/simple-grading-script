@@ -55,7 +55,7 @@ ex_num=9
 file_name=1
 
 # class number.
-# Though it's OK to write like C6 and so on.
+# Though it's OK to write like C6, c3 and so on.
 class=2
 
 # Translating the exercise number, program file name, class number.
@@ -89,11 +89,13 @@ else
 		file_name=${file_name:0:4}"0"${file_name:4:5}
 	fi
 fi
-if [[ ! $class =~ ^C?[0-9]$ ]]; then
+if [[ ! $class =~ ^[cC]?[0-9]$ ]]; then
         echo -e "Can\'t translate class number."
 	exit 1
 fi
-if [[ ! $class =~ C ]]; then
+if [[ $class =~ c ]]; then
+	class=C${class:1:1}
+elif [[ ! $class =~ c ]]; then
 	class=C$class
 fi
 
