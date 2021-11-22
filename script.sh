@@ -193,13 +193,13 @@ do
 		if [[ "${file_to_check[i]}" == "out" ]]; then
 			file_to_check[i]=out.txt
 		fi
-		if [[ $re_str != "" ]]; then
+		if [[ ${re_str[i]} != "" ]]; then
 			echo "About to regex-check \"${file_to_check[i]}\"."
 			re_str_elm=""
 			re_str_ext=${re_str[i]}
 			re_cnt_elm=""
 			re_cnt_ext=${re_cnt[i]}
-			while [[ $re_str_elm != $re_str_ext ]]; do
+			while [[ "$re_str_elm" != "$re_str_ext" ]]; do
 				re_str_elm=${re_str_ext%%${re_separator}*}
 				re_str_ext=${re_str_ext#*${re_separator}}
 				re_cnt_elm=${re_cnt_ext%%,*}
@@ -213,6 +213,8 @@ do
 					echo Yes.
 				fi
 			done
+		else
+			get_score=false
 		fi
 		if [[ $get_score == true ]]; then
 			score=$(($score+${part_score[i]}))
