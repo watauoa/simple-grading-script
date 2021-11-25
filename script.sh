@@ -18,7 +18,7 @@
 # The input string. Inputting enter key should be expressed as \n. Additionally, inputting ctrl-d doesn't have to express in this string.
 # If an input is from a file specified by a file name, this string should be the one-line content string that was replaced from newline to \n.
 # If an input is command line arguments, you have to modify the part "running the program".
-stdinstr="C1 1251001 Yamada 100\nC2 1251022 Watanabe 65\nC4 1251033 Saito 80\nC3 1251001 Suzuki 70\n"
+stdinstr="C5 1251164 Egawa 85\nC3 1251100 Uehara 85\n"
 
 # Meanings of the file_exist_score and the compilable_score is obvious.
 # Those variables are about partial part interaction. 
@@ -28,12 +28,12 @@ stdinstr="C1 1251001 Yamada 100\nC2 1251022 Watanabe 65\nC4 1251033 Saito 80\nC3
 # The re_str and re_cnt will be used to grade files with regex. If the re_check is empty, this function never work. TODO: more explanation.
 file_exist_score=20
 compilable_score=20
-msg=("key->record in each function?" "header file?" "main()?")
-part_score=(30 10 20)
-file_to_check=("src" "stulist01.h" "src")
+msg=("Reading file?" "appeding to tail?" "count function?")
+part_score=(25 25 10)
+file_to_check=("src" "out" "out")
 re_separator=":::"
-re_str=("" "NodePointer +insert *\( *Record:::NodePointer +make_1node *\( *Record" "")
-re_cnt=(0 1,1 0)
+re_str=("fopen *\(:::fscanf *\(" "" "14 nodes:::15 nodes")
+re_cnt=(1,1,1 0 2,1)
 
 # In the partial score interaction, the key of this character means the program satisfies the condition. Any other character means decline.
 # The default value is "m" because it's easy to press repeatedly.
@@ -53,8 +53,8 @@ ex_num=9
 # - prog02
 # - 03.
 # and so on.
-src_file=(1)
-hdr_file=("stulist01")
+src_file=(2)
+hdr_file=("stulist02")
 
 # class number.
 # Though it's OK to write like C6, c3 and so on.
@@ -182,7 +182,6 @@ do
 	else
 		echo "No error occured in runtime."
 	fi
-	cat out.txt
 	# message interaction
 	# TODO: more tests.
 	for ((i = 0; i < ${#msg[@]}; i++)) {
@@ -221,8 +220,12 @@ do
 			score=$(($score+${part_score[i]}))
 			continue
 		fi
-		echo "display $file_to_check."
-		cat ${file_to_check[i]}
+		echo "displaying ${file_to_check[i]}"
+		if (( i != 0 )); then
+			cat ${file_to_check[i]}
+		else
+			cat ${file_to_check[i]} | grep -A20 -P main\(\)
+		fi
 		read -n1 -p "${msg[i]}" yn
 		echo ''
 		if [[ $yn == $yes_char ]]; then
