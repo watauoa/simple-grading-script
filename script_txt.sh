@@ -20,7 +20,7 @@
 # The input string. Inputting enter key should be expressed as \n. Additionally, inputting ctrl-d doesn't have to express in this string.
 # If an input is from a file specified by a file name, this string should be the one-line content string that was replaced from newline to \n.
 # If an input is command line arguments, you have to modify the part "running the program".
-stdinstr="9"
+stdinstr=""
 
 # Meanings of the file_exist_score and the compilable_score is obvious.
 # Those variables are about partial part interaction. 
@@ -28,14 +28,14 @@ stdinstr="9"
 # The meaning of part_score is obvious. The order of the numbers corresponds to the order of msg.
 # The file_to_check is the file paths that should be checked when the score interaction. The keyword "src" and "out" is acceptable. The "src" is the source code file. The "out" is the output texts. If you should check multiple files, those files can be specified by colon separated value.
 # The re_str and re_cnt will be used to grade files with regex. If the re_check is empty, this function never work. TODO: more explanation.
-file_exist_score=20
+file_exist_score=10
 compilable_score=20
-msg=("The output is OK?")
-part_score=(60)
-file_to_check=("out")
+msg=("sane case?" "insane case?" "overall compile?")
+part_score=(10 10 10)
+file_to_check=("prog03.txt" "prog03.txt" "prog03.txt")
 re_separator=":::"
-re_str=("^ *Area *= *[0-9.]+ *$")
-re_cnt=(1)
+re_str=("gcc +\-DTEST0 +prog03_main\.c" "gcc +\-DTEST1 +prog03_main\.c" "gcc +prog03_main\.c +prog03_input\.c")
+re_cnt=(1 1 1)
 
 # In the partial score interaction, the key of this character means the program satisfies the condition. Any other character means decline.
 # The default value is "m" because it's easy to press repeatedly.
@@ -48,9 +48,9 @@ ex_num=12
 # The source_file is source code names without .c extension.
 # The header_file is header file names without .h extension.
 # The other_file is file names that is not source code or header file, for example text file, with extension.
-source_file=("main02" "calc02")
-header_file=("header02")
-other_file=("prog02.txt")
+source_file=()
+header_file=()
+other_file=("prog03.txt")
 
 # class number.
 # Though it's OK to write like C6, c3 and so on.
@@ -159,43 +159,44 @@ do
 	fi
 	echo "The current score is $score."
 
+	#--------------------------------------------------------------------------------------
 	# compiling the program
-	for ((i = 0; i < ${#source_file[@]}; i++)) {
-		cp src/${id}_${source_file[i]}.c ${source_file[i]}.c
-	}
-	for ((i = 0; i < ${#header_file[@]}; i++)) {
-		cp src/${id}_${header_file[i]}.h ${header_file[i]}.h
-	}
-	echo -n "Compile: "
-	gcc -DDEBUG main02.c && gcc -DDEBUG calc02.c && gcc calc02.c main02.c
+	#for ((i = 0; i < ${#source_file[@]}; i++)) {
+	#	cp src/${id}_${source_file[i]}.c ${source_file[i]}.c
+	#}
+	#for ((i = 0; i < ${#header_file[@]}; i++)) {
+	#	cp src/${id}_${header_file[i]}.h ${header_file[i]}.h
+	#}
+	#echo -n "Compile: "
 	#gcc $(echo ${source_file[*]}.c | sed 's/ /.c /g') -o elf/$id.elf 2> /dev/null
-	if [ $? == 0 ]; then
-		echo "Successed. $compilable_score points was added."
-		score=$(($score+$compilable_score))
-	else
-		echo "Failed."
-		echo "The final score is $score"
-		echo $id,$score >> $scorefile_name
-		continue
-	fi
+	#if [ $? == 0 ]; then
+	#	echo "Successed. $compilable_score points was added."
+	#	score=$(($score+$compilable_score))
+	#else
+	#	echo "Failed."
+	#	echo "The final score is $score"
+	#	echo $id,$score >> $scorefile_name
+	#	continue
+	#fi
+	#--------------------------------------------------------------------------------------
 	echo "The current score is $score."
-	gcc -c calc02.c
-	gcc -c main02.c
-	gcc calc02.o main02.o -o elf/$id.elf
 
 	for ((i = 0; i < ${#other_file[@]}; i++)) {
 		cp src/${id}_${other_file[i]} ${other_file[i]}
 	}
 
+	#--------------------------------------------------------------------------------------
 	# running the program
-	cp elf/$id.elf ./exe.elf
-	echo -e $stdinstr | timeout 0.5s ./exe.elf > out/$id.out
-	if [ $? != 0 ]; then
-		echo "Runtime error or timeout"
-	else
-		echo "No error occured in runtime."
-	fi
-	cp out/$id.out out.txt
+	#cp elf/$id.elf ./exe.elf
+	#echo -e $stdinstr | timeout 0.5s ./exe.elf > out/$id.out
+	#if [ $? != 0 ]; then
+	#	echo "Runtime error or timeout"
+	#else
+	#	echo "No error occured in runtime."
+	#fi
+	#cp out/$id.out out.txt
+	#--------------------------------------------------------------------------------------
+
 	# message interaction
 	# TODO: more tests.
 	for ((i = 0; i < ${#msg[@]}; i++)) {
