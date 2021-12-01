@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # This program aims to prog1's grading more quickly. The uniqueness of this program is the partial score interaction and the score outputting.
 # 
 # Usage:
@@ -18,7 +20,7 @@
 # The input string. Inputting enter key should be expressed as \n. Additionally, inputting ctrl-d doesn't have to express in this string.
 # If an input is from a file specified by a file name, this string should be the one-line content string that was replaced from newline to \n.
 # If an input is command line arguments, you have to modify the part "running the program".
-stdinstr="1\nC3 1251010 Hatanaka 60\n0\n1001000\n0\n1251022\n"
+stdinstr=""
 
 # Meanings of the file_exist_score and the compilable_score is obvious.
 # Those variables are about partial part interaction. 
@@ -28,12 +30,12 @@ stdinstr="1\nC3 1251010 Hatanaka 60\n0\n1001000\n0\n1251022\n"
 # The re_str and re_cnt will be used to grade files with regex. If the re_check is empty, this function never work. TODO: more explanation.
 file_exist_score=20
 compilable_score=20
-msg=("Is the output is OK?")
-part_score=(60)
-file_to_check=("out")
+msg=("The explanation is OK?" "The output is OK?")
+part_score=(30 30)
+file_to_check=("prog01.txt" "out")
 re_separator=":::"
-re_str=("C1.+1251001.+Yamada.+100:::C2.+1251022.+Watanabe.+80:::C4.+1251033.+Saito.+65:::C3.+1251004.+Sato.+50:::C5.+1251015.+Hoshino.+90:::C6.+1251036.+Wang.+79:::C1.+1251007.+Nagashi.+80:::C3.+1251081.+Matsui.+60:::C2.+1251098.+Kudo.+85:::C5.+1251099.+Kuroda.+89:::C3.+1251123.+Ota.+45:::C5.+1251150.+Hara.+66:::C5.+1251164.+Egawa.+75:::C6.+1251200.+Higashio.+90:::C3.+1251010.+Hatanaka.+60")
-re_cnt=(4,3,4,4,4,4,4,4,4,4,4,4,4,4,3)
+re_str=("" "a=1:::b=0.5:::\(a\).*\-4$:::\(a\+2\).*0$:::\(a\)\*4.*\-16$:::\(b\).*\-3.750000$:::\(b\+2\.5\).*0.000000$")
+re_cnt=(0 1,1,1,1,1,1,1)
 
 # In the partial score interaction, the key of this character means the program satisfies the condition. Any other character means decline.
 # The default value is "m" because it's easy to press repeatedly.
@@ -41,24 +43,18 @@ yes_char="m"
 
 # Exercise number
 # Though it's OK to write like ex12, ex06, and so on.
-ex_num=9
+ex_num=12
 
-# Program name.
-# Example:
-# - prog01.c -> 1
-# - prog03a.c -> 3a
-# Though it's OK to write:
-# - prog01a
-# - 02b
-# - prog02
-# - 03.
-# and so on.
-src_file=(3)
-hdr_file=("stulist03")
+# The source_file is source code names without .c extension.
+# The header_file is header file names without .h extension.
+# The other_file is file names that is not source code or header file, for example text file, with extension.
+source_file=("prog01")
+header_file=()
+other_file=("prog01.txt")
 
 # class number.
 # Though it's OK to write like C6, c3 and so on.
-class=6
+class=1
 
 # Translating the exercise number, program file name, class number.
 if [[ ! $ex_num =~ ^(ex)?[0-9][0-9]?$ ]]; then
@@ -78,25 +74,27 @@ else
 	fi
 fi
 echo \"$ex_num\".
-for ((i = 0; i < ${#src_file[@]}; i++)) {
-	if [[ ! ${src_file[i]} =~ ^(prog)?[0-9][0-9]?[a-z]?$ ]]; then
-		echo -e "\"${src_file[i]}\"can\'t be translated as an source file name."
-		exit 1
-	fi
-	echo -n "The source file name \"${src_file[i]}\" was translated to "
-	if [[ ! ${src_file[i]} =~ prog ]]; then
-		if [[ ! ${src_file[i]} =~ [0-9][0-9] ]]; then
-			src_file[$i]=prog0${src_file[i]}
-		else
-			src_file[$i]=prog${src_file[i]}
-		fi
-	else
-		if [[ ! ${src_file[i]} =~ [0-9][0-9] ]]; then
-			src_file[$i]=${src_file[i]:0:4}"0"${src_file[i]:4:1}
-		fi
-	fi
-	echo \"${src_file[i]}\".
-}
+#----------------------------------------------------------------------------------------
+#for ((i = 0; i < ${#source_file[@]}; i++)) {
+#	if [[ ! ${source_file[i]} =~ ^(prog)?[0-9][0-9]?[a-z]?$ ]]; then
+#		echo -e "\"${source_file[i]}\"can\'t be translated as an source file name."
+#		exit 1
+#	fi
+#	echo -n "The source file name \"${source_file[i]}\" was translated to "
+#	if [[ ! ${source_file[i]} =~ prog ]]; then
+#		if [[ ! ${source_file[i]} =~ [0-9][0-9] ]]; then
+#			source_file[$i]=prog0${source_file[i]}
+#		else
+#			source_file[$i]=prog${source_file[i]}
+#		fi
+#	else
+#		if [[ ! ${source_file[i]} =~ [0-9][0-9] ]]; then
+#			source_file[$i]=${source_file[i]:0:4}"0"${source_file[i]:4:1}
+#		fi
+#	fi
+#	echo \"${source_file[i]}\".
+#}
+#----------------------------------------------------------------------------------------
 echo -n "The class number \"$class\" was translated to "
 if [[ ! $class =~ ^[cC]?[0-9]$ ]]; then
         echo -e "\"$class\" can\'t translated as an class number."
@@ -110,8 +108,8 @@ elif [[ ! $class =~ c ]]; then
 fi
 
 # About the directory and score file.
-running_directory=$ex_num"_"$(echo ${src_file[*]} | sed 's/ /_/g')"_"$class
-scorefile_name="score_"$ex_num"_"$(echo ${src_file[*]} | sed 's/ /_/g')"_"$class".txt"
+running_directory=$ex_num"_"$(echo ${source_file[*]} | sed 's/ /_/g')"_"$class
+scorefile_name="score_"$ex_num"_"$(echo ${source_file[*]} | sed 's/ /_/g')"_"$class".txt"
 mkdir $running_directory
 cd $running_directory
 rm $scorefile_name
@@ -126,21 +124,29 @@ do
 	score=0
 	echo -n "File Exist: "
 	target_files_exist=true
-	for ((i = 0; i < ${#src_file[@]}; i++)) {
-		target_file_path=/home/course/prog1/local_html/2021/exsrc/$ex_num/${src_file[i]}/$id.c
+	for ((i = 0; i < ${#source_file[@]}; i++)) {
+		target_file_path=/home/course/prog1/local_html/2021/exsrc/$ex_num/${source_file[i]}/$id.c
 		if [ ! -f $target_file_path ]; then
 			target_files_exist=false
 			continue
 		fi
-		cp $target_file_path ./src/${id}_${src_file[i]}.c
+		cp $target_file_path ./src/${id}_${source_file[i]}.c
 	}
-	for ((i = 0; i < ${#hdr_file[@]}; i++)) {
-		target_file_path=/home/course/prog1/local_html/2021/exsrc/$ex_num/${hdr_file[i]}/$id.h
+	for ((i = 0; i < ${#header_file[@]}; i++)) {
+		target_file_path=/home/course/prog1/local_html/2021/exsrc/$ex_num/${header_file[i]}/$id.h
 		if [ ! -f $target_file_path ]; then
 			target_files_exist=false
 			continue
 		fi
-		cp $target_file_path ./src/${id}_${hdr_file[i]}.h
+		cp $target_file_path ./src/${id}_${header_file[i]}.h
+	}
+	for ((i = 0; i < ${#other_file[@]}; i++)) {
+		target_file_path=/home/course/prog1/local_html/2021/exsrc/$ex_num/${other_file[i]%.*}/$id.${other_file[i]##*.}
+		if [ ! -f $target_file_path ]; then
+			target_files_exist=false
+			continue
+		fi
+		cp $target_file_path ./src/${id}_${other_file[i]}
 	}
 	if [[ $target_files_exist == true ]]; then
 		echo "Yes. $file_exist_score points was added."
@@ -154,14 +160,14 @@ do
 	echo "The current score is $score."
 
 	# compiling the program
-	for ((i = 0; i < ${#src_file[@]}; i++)) {
-		cp src/${id}_${src_file[i]}.c ${src_file[i]}.c
+	for ((i = 0; i < ${#source_file[@]}; i++)) {
+		cp src/${id}_${source_file[i]}.c ${source_file[i]}.c
 	}
-	for ((i = 0; i < ${#hdr_file[@]}; i++)) {
-		cp src/${id}_${hdr_file[i]}.h ${hdr_file[i]}.h
+	for ((i = 0; i < ${#header_file[@]}; i++)) {
+		cp src/${id}_${header_file[i]}.h ${header_file[i]}.h
 	}
 	echo -n "Compile: "
-	gcc $(echo ${src_file[*]}.c | sed 's/ /.c /g') -o elf/$id.elf 2> /dev/null
+	gcc $(echo ${source_file[*]}.c | sed 's/ /.c /g') -o elf/$id.elf 2> /dev/null
 	if [ $? == 0 ]; then
 		echo "Successed. $compilable_score points was added."
 		score=$(($score+$compilable_score))
@@ -173,22 +179,26 @@ do
 	fi
 	echo "The current score is $score."
 
+	for ((i = 0; i < ${#other_file[@]}; i++)) {
+		cp src/${id}_${other_file[i]} ${other_file[i]}
+	}
+
 	# running the program
 	cp elf/$id.elf ./exe.elf
 	echo -e $stdinstr | timeout 0.5s ./exe.elf > out/$id.out
-	cp out/$id.out out.txt
 	if [ $? != 0 ]; then
 		echo "Runtime error or timeout"
 	else
 		echo "No error occured in runtime."
 	fi
+	cp out/$id.out out.txt
 	# message interaction
 	# TODO: more tests.
 	for ((i = 0; i < ${#msg[@]}; i++)) {
 		echo '>>>'${msg[i]}
 		get_score=true
 		if [[ "${file_to_check[i]}" == "src" ]]; then
-			file_to_check[i]=${src_file[0]}.c
+			file_to_check[i]=${source_file[0]}.c
 		fi
 		if [[ "${file_to_check[i]}" == "out" ]]; then
 			file_to_check[i]=out.txt
