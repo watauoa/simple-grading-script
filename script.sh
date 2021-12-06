@@ -30,10 +30,9 @@ stdinstr=""
 # The re_str and re_cnt will be used to grade files with regex. If the re_check is empty, this function never work. TODO: more explanation.
 file_exist_score=20
 compilable_score=20
-msg=("pbm_alloc()?" "pbm_read()?" "pbm_square()?")
-part_score=(20 20 20)
-file_to_check=("src" "src" "src")
-fn=("pbm_alloc" "pbm_read" "pbm_square")
+msg=("OK?")
+part_score=(60)
+file_to_check=("out")
 re_separator=":::"
 re_str=("" "" "")
 re_cnt=()
@@ -49,7 +48,7 @@ ex_num=13
 # The source_file is source code names without .c extension.
 # The header_file is header file names without .h extension.
 # The other_file is file names that is not source code or header file, for example text file, with extension.
-source_file=("prog02")
+source_file=("prog03")
 header_file=()
 other_file=()
 
@@ -168,8 +167,8 @@ do
 		cp src/${id}_${header_file[i]}.h ${header_file[i]}.h
 	}
 	echo -n "Compile: "
-	gcc $(echo ${source_file[*]}.c | sed 's/ /.c /g') -DWSQUARE -o elf/${id}_ws.elf 2> /dev/null
-	gcc $(echo ${source_file[*]}.c | sed 's/ /.c /g') -DBSQUARE -o elf/${id}_bs.elf 2> /dev/null
+	gcc $(echo ${source_file[*]}.c | sed 's/ /.c /g') -DERODE -o elf/${id}_erode.elf 2> /dev/null
+	gcc $(echo ${source_file[*]}.c | sed 's/ /.c /g') -DDILATE -o elf/${id}_dilate.elf 2> /dev/null
 	if [ $? == 0 ]; then
 		echo "Successed. $compilable_score points was added."
 		score=$(($score+$compilable_score))
@@ -186,10 +185,10 @@ do
 	}
 
 	# running the program
-	cp elf/${id}_ws.elf ./exe_ws.elf
-	cp elf/${id}_bs.elf ./exe_bs.elf
-	cat p1.pbm | ./exe_bs.elf 0.7 | display -
-	cat p1.pbm | ./inv | ./exe_ws.elf 0.5 | display -
+	cp elf/${id}_erode.elf ./exe_erode.elf
+	cp elf/${id}_dilate.elf ./exe_dilate.elf
+	cat p1.pbm | ./exe_erode.elf | display -
+	cat p1.pbm | ./exe_dilate.elf | display -
 	if [ $? != 0 ]; then
 		echo "Runtime error or timeout"
 	else
@@ -234,8 +233,8 @@ do
 			score=$(($score+${part_score[i]}))
 			continue
 		fi
-		echo "display $file_to_check."
-		cat ${file_to_check[i]} | grep -zoP "(?s)[[:alnum:]_]+?[^[:alnum:]_]+?${fn[i]}[^(]*?\([^)]*?\)[^;{]*?(\{([^{}]|(?1))*\})"
+		#echo "display $file_to_check."
+		#cat ${file_to_check[i]} | grep -zoP "(?s)[[:alnum:]_]+?[^[:alnum:]_]+?${fn[i]}[^(]*?\([^)]*?\)[^;{]*?(\{([^{}]|(?1))*\})"
 		read -n1 -p "${msg[i]}" yn
 		echo ''
 		if [[ $yn == $yes_char ]]; then
