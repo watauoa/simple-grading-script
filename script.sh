@@ -20,7 +20,7 @@
 # The input string. Inputting enter key should be expressed as \n. Additionally, inputting ctrl-d doesn't have to express in this string.
 # If an input is from a file specified by a file name, this string should be the one-line content string that was replaced from newline to \n.
 # If an input is command line arguments, you have to modify the part "running the program".
-stdinstr=""
+stdinstr="to\nAdvance\nKnowledge\nfor\nHumanity\n"
 
 # Meanings of the file_exist_score and the compilable_score is obvious.
 # Those variables are about partial part interaction. 
@@ -30,12 +30,12 @@ stdinstr=""
 # The re_str and re_cnt will be used to grade files with regex. If the re_check is empty, this function never work. TODO: more explanation.
 file_exist_score=20
 compilable_score=20
-msg=("The explanation is OK?" "The output is OK?")
-part_score=(30 30)
-file_to_check=("prog01.txt" "out")
+msg=("malloc OK with strlen?" "The malloced pointer is assigned?" "copying OK?")
+part_score=(20 20 20)
+file_to_check=("prog01.c" "prog01.c" "prog01.c")
 re_separator=":::"
-re_str=("" "a=1:::b=0.5:::\(a\).*\-4$:::\(a\+2\).*0$:::\(a\)\*4.*\-16$:::\(b\).*\-3.750000$:::\(b\+2\.5\).*0.000000$")
-re_cnt=(0 1,1,1,1,1,1,1)
+re_str=("" "" "")
+re_cnt=()
 
 # In the partial score interaction, the key of this character means the program satisfies the condition. Any other character means decline.
 # The default value is "m" because it's easy to press repeatedly.
@@ -43,14 +43,14 @@ yes_char="m"
 
 # Exercise number
 # Though it's OK to write like ex12, ex06, and so on.
-ex_num=12
+ex_num=13
 
 # The source_file is source code names without .c extension.
 # The header_file is header file names without .h extension.
 # The other_file is file names that is not source code or header file, for example text file, with extension.
 source_file=("prog01")
 header_file=()
-other_file=("prog01.txt")
+other_file=()
 
 # class number.
 # Though it's OK to write like C6, c3 and so on.
@@ -185,7 +185,7 @@ do
 
 	# running the program
 	cp elf/$id.elf ./exe.elf
-	echo -e $stdinstr | timeout 0.5s ./exe.elf > out/$id.out
+	echo -e $stdinstr | timeout 0.5s ./exe.elf | tee out/$id.out
 	if [ $? != 0 ]; then
 		echo "Runtime error or timeout"
 	else
