@@ -20,7 +20,7 @@
 # The input string. Inputting enter key should be expressed as \n. Additionally, inputting ctrl-d doesn't have to express in this string.
 # If an input is from a file specified by a file name, this string should be the one-line content string that was replaced from newline to \n.
 # If an input is command line arguments, you have to modify the part "running the program".
-stdinstr="to\nAdvance\nKnowledge\nfor\nHumanity\n"
+stdinstr=""
 
 # Meanings of the file_exist_score and the compilable_score is obvious.
 # Those variables are about partial part interaction. 
@@ -30,9 +30,10 @@ stdinstr="to\nAdvance\nKnowledge\nfor\nHumanity\n"
 # The re_str and re_cnt will be used to grade files with regex. If the re_check is empty, this function never work. TODO: more explanation.
 file_exist_score=20
 compilable_score=20
-msg=("malloc OK with strlen?" "The malloced pointer is assigned?" "copying OK?")
+msg=("pbm_alloc()?" "pbm_read()?" "pbm_square()?")
 part_score=(20 20 20)
-file_to_check=("prog01.c" "prog01.c" "prog01.c")
+file_to_check=("src" "src" "src")
+fn=("pbm_alloc" "pbm_read" "pbm_square")
 re_separator=":::"
 re_str=("" "" "")
 re_cnt=()
@@ -48,7 +49,7 @@ ex_num=13
 # The source_file is source code names without .c extension.
 # The header_file is header file names without .h extension.
 # The other_file is file names that is not source code or header file, for example text file, with extension.
-source_file=("prog01")
+source_file=("prog02")
 header_file=()
 other_file=()
 
@@ -167,7 +168,8 @@ do
 		cp src/${id}_${header_file[i]}.h ${header_file[i]}.h
 	}
 	echo -n "Compile: "
-	gcc $(echo ${source_file[*]}.c | sed 's/ /.c /g') -o elf/$id.elf 2> /dev/null
+	gcc $(echo ${source_file[*]}.c | sed 's/ /.c /g') -DWSQUARE -o elf/${id}_ws.elf 2> /dev/null
+	gcc $(echo ${source_file[*]}.c | sed 's/ /.c /g') -DBSQUARE -o elf/${id}_bs.elf 2> /dev/null
 	if [ $? == 0 ]; then
 		echo "Successed. $compilable_score points was added."
 		score=$(($score+$compilable_score))
@@ -184,8 +186,10 @@ do
 	}
 
 	# running the program
-	cp elf/$id.elf ./exe.elf
-	echo -e $stdinstr | timeout 0.5s ./exe.elf | tee out/$id.out
+	cp elf/${id}_ws.elf ./exe_ws.elf
+	cp elf/${id}_bs.elf ./exe_bs.elf
+	cat p1.pbm | ./exe_bs.elf 0.7 | display -
+	cat p1.pbm | ./inv | ./exe_ws.elf 0.5 | display -
 	if [ $? != 0 ]; then
 		echo "Runtime error or timeout"
 	else
@@ -231,7 +235,7 @@ do
 			continue
 		fi
 		echo "display $file_to_check."
-		cat ${file_to_check[i]}
+		cat ${file_to_check[i]} | grep -zoP "(?s)[[:alnum:]_]+?[^[:alnum:]_]+?${fn[i]}[^(]*?\([^)]*?\)[^;{]*?(\{([^{}]|(?1))*\})"
 		read -n1 -p "${msg[i]}" yn
 		echo ''
 		if [[ $yn == $yes_char ]]; then
